@@ -31,13 +31,19 @@ class GradeController extends Controller
             'bimonthly' => 'required|integer',
             'monthly_note' => 'required|numeric|between:0,10',
             'bimonthly_note' => 'required|numeric|between:0,10',
+            'remedial_note' => 'nullable|numeric|between:0,10'
         ];
 
         $request->validate($rules);
 
         $monthly_note = $request->monthly_note;
         $bimonthly_note = $request->bimonthly_note;
+        $remedial_note = $request->remedial_note;
         $average = ($bimonthly_note + $monthly_note) / 2;
+
+        if ($remedial_note) {
+            $average = ($average + $remedial_note) / 2;
+        }
 
         if ($average >= 6 && $average <= 10) {
             $result = 'approved';
@@ -55,6 +61,7 @@ class GradeController extends Controller
             'bimonthly' => $request->bimonthly,
             'monthly_note' => $monthly_note,
             'bimonthly_note' => $bimonthly_note,
+            'remedial_note' => $request->remedial_note,
             'average' => $average,
             'result' => $result
         ]);
@@ -103,13 +110,19 @@ class GradeController extends Controller
             'bimonthly' => 'required|integer',
             'monthly_note' => 'required|numeric|between:0,10',
             'bimonthly_note' => 'required|numeric|between:0,10',
+            'remedial_note' => 'nullable|numeric|between:0,10'
         ];
 
         $request->validate($rules);
 
         $monthly_note = $request->monthly_note;
         $bimonthly_note = $request->bimonthly_note;
+        $remedial_note = $request->remedial_note;
         $average = ($bimonthly_note + $monthly_note) / 2;
+
+        if ($remedial_note) {
+            $average = ($average + $remedial_note) / 2;
+        }
 
         if ($average >= 6 && $average <= 10) {
             $result = 'approved';
@@ -127,6 +140,7 @@ class GradeController extends Controller
             'bimonthly' => $request->bimonthly,
             'monthly_note' => $monthly_note,
             'bimonthly_note' => $bimonthly_note,
+            'remedial_note' => $request->remedial_note,
             'average' => $average,
             'result' => $result
         ]);
@@ -135,6 +149,42 @@ class GradeController extends Controller
             'message' => 'Nota editada com sucesso!',
             'grade' => $grade
         ], 200);
+    }
+
+    public function updateRemedialNote(Request $request, string $id) {
+        $grade = Grade::find($id);
+
+        if (!$grade) {
+            return response()->json([
+                'message' => 'Nota não encontrada!',
+            ], 404);
+        }
+
+        $rules = [
+            'remedial_note' => 'nullable|numeric|between:0,10'
+        ];
+
+        $request->validate($rules);
+
+        $remedial_note = $request->remedial_note;
+        $average = $grade->average;
+        $average = ($average + $remedial_note) / 2;
+
+        if ($average >= 6 && $average <= 10) {
+            $result = 'approved';
+        } else if ($average < 6 && $average >= 0) {
+            $result = 'disapproved';
+        } else {
+            return response()->json([
+                'message' => 'Notas inválidas. A média deve estar entre 0 a 10'
+            ]);
+        }
+
+        $grade->update([
+            'remedial_note' => $remedial_note,
+            'average' => $average,
+            'result' => $result
+        ]);
     }
 
     /**

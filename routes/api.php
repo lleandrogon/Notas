@@ -18,4 +18,5 @@ Route::middleware('auth:sanctum')->group(function() {
 
     Route::apiResource('disciplinas', DisciplineController::class);
     Route::apiResource('notas', GradeController::class);
+    Route::patch('notas/{id}/recuperacao', [GradeController::class, 'updateRemedialNote'])->name('notas.remedial');
 });

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Discipline;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class DisciplineController extends Controller
 {
@@ -12,7 +13,11 @@ class DisciplineController extends Controller
      */
     public function index()
     {
-        $disciplines = Discipline::all();
+        $user_id = Auth::id();
+        
+        $disciplines = Discipline::with(['grades' => function ($query) use ($user_id) {
+            $query->where('user_id', $user_id);
+        }])->get();
 
         return response()->json([
             'message' => 'Disciplinas listadas com sucesso!',

@@ -61,7 +61,7 @@ class GradeController extends Controller
             'bimonthly' => $request->bimonthly,
             'monthly_note' => $monthly_note,
             'bimonthly_note' => $bimonthly_note,
-            'remedial_note' => $request->remedial_note,
+            'remedial_note' => $remedial_note,
             'average' => $average,
             'result' => $result
         ]);
@@ -140,7 +140,7 @@ class GradeController extends Controller
             'bimonthly' => $request->bimonthly,
             'monthly_note' => $monthly_note,
             'bimonthly_note' => $bimonthly_note,
-            'remedial_note' => $request->remedial_note,
+            'remedial_note' => $remedial_note,
             'average' => $average,
             'result' => $result
         ]);
@@ -185,6 +185,11 @@ class GradeController extends Controller
             'average' => $average,
             'result' => $result
         ]);
+
+        return response()->json([
+            'message' => 'Recuperação alterada com sucesso!',
+            'grade' => $grade
+        ], 200);
     }
 
     /**
